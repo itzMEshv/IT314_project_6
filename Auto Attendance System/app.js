@@ -26,6 +26,11 @@ app.post("/register/student",async(req,res)=>{
     }
 });
 
+//static files
+
+app.use('/homePage',express.static(__dirname + '/views/homePage'));
+
+
 app.post("/login/student",async(req,res)=>{
     const usr = await user.findOne({email:req.body.email,password:req.body.password})
     if(usr){

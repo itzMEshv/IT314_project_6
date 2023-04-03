@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap');
+* {
+   margin: 0 0;
+   padding: 0 0;
+   border: 0;
+   box-sizing: border-box;
+   font-family: 'Inter', sans-serif;
+}
+
+:root {
+   --white: #FFFFFF;
+   --black: #000000;
+   --primary: #008037;
+   --secondary: #E9EFF4;
+}
+
+body{
+    overflow: hidden;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+ 
+.div1
+{   display:inline-block;
+    background-color:#E9EFF4;
+    width:50vw;
+    height:100vh;
+}
+.div2
+{   display: inline-block; 
+    background-color:#FFFFFF;
+    height:100vh;
+    width:50vw;
+    text-align: center;
+}
+
+.logo
+{
+    display:inline-block;
+    width: 35vw;
+    height: 70vh;
+    margin-left: 7.5vw;
+    margin-top: 12vh;
+}
+.head1
+{
+    display: inline-block;
+    color: var(--black);
+    font-size: 4vh;
+    font-weight: 500;
+    margin-top: 31vh;
+}
+.sub
+{
+    display: inline-block;
+    color: var(--primary);
+    font-size: 3.8vh;
+    font-weight: 600;
+    margin-top: 8.5vh;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 39vw;
+}
+
+.btn{
+    display: inline-block;
+    border-radius: 6px;
+    color: #000000;
+    width: 13vw;
+    height: 6vh;
+    font-weight: 700;
+    padding: 0.7vh 0.7vw;
+    margin-top: 9vh;
+    font-size: 20px;
+    background: #ffffff;
+    border: 0.5vh solid var(--primary);
+    text-decoration: none;
+}
+  
+.btn:hover 
+{
+    transform: scale(1.1);
+}
+
+
+
+/* ------------ Animations ------------ */
+
+
+.motoAnimate {
+    animation-name: increaseMoto;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: backwards;
+ }
+ 
+ @keyframes increaseMoto {
+    from {
+       width: 0vw;
+    }
+  
+    to {
+       width: 39vw;
+    }
+ }
