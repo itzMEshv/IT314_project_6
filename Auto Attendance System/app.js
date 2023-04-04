@@ -30,7 +30,8 @@ app.set("view engine","ejs")
 
 //static files
 app.use('/homePage',express.static(__dirname + '/views/homePage'));
-
+app.use('/login',express.static(__dirname + '/views/login'));
+app.use('/register',express.static(__dirname + '/views/register'));
 
 
 // home page
