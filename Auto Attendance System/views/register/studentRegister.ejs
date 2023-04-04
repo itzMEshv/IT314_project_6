@@ -4,17 +4,32 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/2965379893.js" crossorigin="anonymous"></script>
     <title>Student Register</title>
+    <link rel="stylesheet" href="/register/css/studentRegister.css" />
+    <script src="/register/js/studentRegister.js"></script>
 </head>
 <body>
-    <h1>Register for student</h1>
-    <form method="post">
-        <input type="text" placeholder="First Name" name="firstName" required id=""><br>
-        <input type="text" placeholder="Last Name" name="lastName" id=""><br>
-        <input type="email" placeholder="Email" name="email" id="" required><br>
-        <input type="password" name="password" placeholder="password" required><br>
-        <input type="text" name="role" value="student" required readonly id=""><br>
-        <input type="submit" value="Register">
-    </form>
+    <div class="container">
+        <div class="div1">
+            <img src="/register/image/logo.png" class="logo">
+        </div>
+        <div class="div2">
+            <div style="justify-self: center; text-align: center;">
+                <div class="message" id="signUpmessage"></div><br>
+                <div class="signUpContainer">
+                   <h1 class="title">Sign Up</h1>
+                   <form method="post">
+                        <input type="text" placeholder="first name" name="firstName" class="inputs" required id="" style="margin-top: 0.5vh; width: 21vw;"><br>
+                        <input type="text" placeholder="last name" name="lastName" class="inputs" id="" style="margin-top: 2.3vh; width: 21vw;"><br>
+                        <input type="email" placeholder="email" name="email" class="inputs" id="" required style="margin-top: 2.3vh; width: 21vw;"><br>
+                        <input type="password" class="inputs" id="signUpPassword" name="password" placeholder="password" required style="margin-top: 2.3vh; width: 21vw;"><i class="fa-solid fa-eye eyeIcon" id="eyeIcon" onclick="togglePassword()"></i><br>
+                        <input type="text" name="role" value="student" class="inputs" required readonly id="" style="margin-top: 2.3vh; width: 21vw;"><br>
+                        <input type="submit" class="button" value="Register" style="margin-top: 3.6vh;">
+                   </form>
+                </div>
+             </div>
+        </div>
+    </div>
 </body>
 </html>
