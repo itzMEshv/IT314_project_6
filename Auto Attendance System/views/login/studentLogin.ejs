@@ -4,15 +4,34 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Login</title>
+    <script src="https://kit.fontawesome.com/2965379893.js" crossorigin="anonymous"></script>
+    <title>LoginStudent</title>
+    <link rel="stylesheet" href="/login/css/studentLogin.css" />
+    <script src="/login/js/studentLogin.js"></script>
 </head>
 <body>
-    <form action = "/login/student" method="post">
-        <input type="email" name="email" placeholder="email" required id=""><br>
-        <input type="password" placeholder="password" name="password" id="" required><br>
-        <input type="text" name="role" value="student" readonly>
-        <input type="submit" value="Login">
-    </form>
-    <a href="/register/student">Register</a>
+    <div class="container">
+        <div class="div1">
+            <img src="/login/image/logo.png" class="logo">
+        </div>
+        <div class="div2">
+            <div style="justify-self: center; text-align: center;">
+                <div class="message" id="signInmessage"></div><br>
+                <div class="signInContainer">
+                   <h1 class="title">Sign In</h1>
+                      <form method="post">
+                         <input type="email" id="signInEmail" name="email" class="inputs" autocomplete="off" placeholder="email" style="margin-top: 0.5vh; width: 21vw;"><br><br>
+                         <input type="password" id="signInPassword" name="password" class="inputs" autocomplete="off" placeholder="password" style="margin-top: 2.3vh; width: 21vw;"><i class="fa-solid fa-eye eyeIcon" id="eyeIcon" onclick="togglePassword()"></i><br><br>
+                         <input type="text" class="inputs" name="role" value="student" readonly style="margin-top: 2.3vh; width: 21vw;"><br><br>
+                         <input type="submit" class="button" value="Login" style="margin-top: 2.6vh;">
+                      </form>
+                    <div class="register">
+                        <p>Not registered? <a href="/register/student">Register</a></p>
+                    </div>  
+                </div>
+             </div>
+        </div>
+    </div>
+
 </body>
 </html>
