@@ -1,20 +1,41 @@
 const express = require("express");
 const app = express();
 const ejs = require("ejs");
+const nodemailer = require('nodemailer');
 const mongoose = require("mongoose")
 const passport = require("passport");
 const {initializingPassport,isAuthenticated} = require("./passportConfig");
 const expressSession = require("express-session")
 const path = require("path")
+const multer = require("multer");
 const User = require("./models/user");
 const user_name= 'saipatel11102';
 const password= 'bzPkbThz4UbHrfYt';
+const XLSX = require("xlsx");
 const url = `mongodb+srv://saipatel11102:${password}@cluster0.kqrufux.mongodb.net/?retryWrites=true&w=majority`
 mongoose.connect(url,{useNewUrlParser:true})
 const con = mongoose.connection
 con.on('open',()=>{
     console.log('Database connected...')
 })
+
+
+const emailName = "Regan Barrows";
+const emailEmail = "regan.barrows@ethereal.email";
+const emailPassword = "p8CcUksSMNfayHAXNA";
+
+const storage = multer.diskStorage({
+    destination:(req,file,callback)=>{
+        callback(null,"./uploads");
+    },
+    filename: (req,file,callback)=>{
+        callback(null,file.fieldname + '-' + Date.now() + path.extname(
+            file.originalname
+        ))
+    } 
+});
+
+const upload = multer({storage:storage});
 
 initializingPassport(passport);
 app.use(express.json())
@@ -123,6 +144,79 @@ app.get("/dashboard/student",async(req,res)=>{
         }
     }
 })
+
+// add student for instructor
+app.get("/addStudent/courseName/courseCode/courseId",(req,res)=>{
+    if(!req.user){
+        res.redirect("/");
+    }
+    else if(req.user.role == "student"){
+        res.redirect("/dashboard/student");
+    }
+    else{
+        let courseName = req.params.courseName;
+        let courseCode = req.params.courseCode;
+        res.render("addStudent/addStudent",{courseName:courseName,courseCode:courseCode});
+        
+    }
+})
+
+app.post("/addStudent/courseName/courseCode/courseId",upload.single("file"),async(req,res)=>{
+    if(!req.user){
+        res.redirect("/");
+    }
+    else if(req.user.role == "student"){
+        res.redirect("/dashboard/student");
+    } 
+    else{
+        const file = XLSX.readFile(req.file.path);
+        const courseId = req.params.courseId;
+        const courseName = req.params.courseName;
+        const courseCode = req.params.courseCode;
+        const sheets = file.SheetNames
+        data = [];
+        for (let i = 0;i<sheets.length;++i){
+            const temp = XLSX.utils.sheet_to_json(
+                file.Sheets[file.SheetNames[i]]
+            );
+            temp.forEach((res)=>{
+                data.push(res);
+            })
+        }
+        data.forEach(res=>{
+            // send email to res.email
+            const transporter = nodemailer.createTransport({
+                host: 'smtp.ethereal.email',
+                port: 587,
+                auth: {
+                    user: `${emailEmail}`,
+                    pass: `${emailPassword}`
+                }
+            });
+        
+            // Message object
+            let message = {
+                from: `${emailName} ${emailEmail}`,
+                to: `${res.email}`,
+                subject: `Enrollement in course ${courseCode}`,
+                text: `Hello ${res.email}`,
+                html: `<p><b>If you have not registered please register in <a href = 'http://localhost:3000' target = "__blank">Here</a></b></p>`
+            };
+        
+            transporter.sendMail(message, (err, info) => {
+                if (err) {
+                    console.log('Error occurred. ' + err.message);
+                    return process.exit(1);
+                }
+            })
+        
+        })
+        res.redirect("/dashboard/instructor");
+    }
+});
+
+
+
 
 // logout
 app.get("/logout",(req,res,next)=>{
