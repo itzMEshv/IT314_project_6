@@ -1,5 +1,6 @@
 const LocalStrategy = require("passport-local").Strategy
 const User = require("./models/user");
+const bcyrpt = require("bcrypt");
 exports.initializingPassport = (passport)=>{
 
     passport.use(new LocalStrategy({
@@ -10,8 +11,8 @@ exports.initializingPassport = (passport)=>{
         try{
             const user = await User.findOne({email:username});
             if (!user)return done(null,false);
-            if(user.password !== password || req.body.role !== user.role)return done(null,false);
-            else return done(null,user);
+            if(!bcyrpt.compare(password,user.password) || req.body.role !== user.role)return done(null,false);
+            return done(null,user);
         }
         catch(err){
             return done(err,false);
