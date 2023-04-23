@@ -8,11 +8,15 @@ const {initializingPassport,isAuthenticated} = require("./passportConfig");
 const expressSession = require("express-session")
 const path = require("path")
 const multer = require("multer");
-const User = require("./models/user");
+
 const user_name= 'saipatel11102';
 const password= 'bzPkbThz4UbHrfYt';
 const XLSX = require("xlsx");
 const url = `mongodb+srv://saipatel11102:${password}@cluster0.kqrufux.mongodb.net/?retryWrites=true&w=majority`
+//models
+const User = require("./models/user");
+const StudentEnrollment = require("./models/studentEnrollment");
+
 mongoose.connect(url,{useNewUrlParser:true})
 const con = mongoose.connection
 con.on('open',()=>{
@@ -140,7 +144,14 @@ app.get("/dashboard/student",async(req,res)=>{
             res.redirect("/dashboard/instructor");
         }
         else{
-            res.render("dashboard/studentDashboard");
+            try{
+                const all = await StudentEnrollment.find({studentEmail:req.user.email});
+                res.render("dashboard/studentDashboard",{data:all,studentEmail:req.user.email,firstName:req.user.firstName,lastName:req.user.lastName});
+            }
+            catch(err){
+                console.log("Error");
+                res.redirect("/dashboard/student");
+            }
         }
     }
 })
