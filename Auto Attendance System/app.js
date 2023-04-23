@@ -16,6 +16,8 @@ const url = `mongodb+srv://saipatel11102:${password}@cluster0.kqrufux.mongodb.ne
 //models
 const User = require("./models/user");
 const StudentEnrollment = require("./models/studentEnrollment");
+const AllCourses = require("./models/allCourses")
+
 
 mongoose.connect(url,{useNewUrlParser:true})
 const con = mongoose.connection
@@ -80,8 +82,22 @@ app.post("/register/student",async(req,res)=>{
         res.redirect("/register/student")
     }
     else{
-        const newUser=await User.create(req.body);
-        res.redirect("/login/student")
+        try{
+            const n = await User.find({
+                email:req.body.email
+            });
+            if(n.length){
+                res.redirect("/register/student");
+            }
+            else{
+                const newUser=await User.create(req.body);
+                res.redirect("/login/student")
+            }
+        }
+        catch(err){
+            console.log("Error");
+            res.redirect("/register/student");
+        }
     }
 });
 
@@ -115,10 +131,16 @@ app.post("/register/instructor",async(req,res)=>{
         res.redirect("/register/instructor");
     }
     else{
-        const newUser=await User.create(req.body);
-        res.redirect("/login/instructor")
+        try{
+            const newUser=await User.create(req.body);
+            res.redirect("/login/instructor")
+        }
+        catch(err){
+            res.redirect("/register/instructor");
+            console.log("error");
+        }
     }
-})
+});
 
 
 
@@ -130,7 +152,15 @@ app.get("/dashboard/instructor",async(req,res)=>{
             res.redirect("/dashboard/student");
         }
         else{
-            res.render("dashboard/instructorDashboard");
+            try{
+                // console.log(req.user.id.toString())
+                const all = await AllCourses.find({instructorId:req.user.id});
+                res.render("dashboard/instructorDashboard",{data:all,instructorEmail:req.user.email,firstName:req.user.firstName,lastName:req.user.lastName});
+            }
+            catch(err){
+                console.log("Error");
+                res.redirect("/dashboard/instructor");
+            }
         }
     }
 })
@@ -226,7 +256,40 @@ app.post("/addStudent/courseName/courseCode/courseId",upload.single("file"),asyn
     }
 });
 
-
+// create course for instructor
+app.post("/createCourse",async(req,res)=>{
+    if(! req.user){
+        res.redirect("/");
+    }
+    else if(req.user.role == "student"){
+        res.redirect("/dashboard/student")
+    }
+    else{
+        try{
+            course = await AllCourses.create({
+                courseCode: req.body.courseCode,
+                instructorId: req.user.id,
+                courseName:req.body.courseName
+            });
+            res.redirect("/dashboard/instructor");
+        }
+        catch(err){
+            console.log("Error in creating course");
+            res.redirect("/dashboard/instructor");
+        }
+    }
+})
+app.get("/createCourse",(req,res)=>{
+    if(! req.user){
+        res.redirect("/");
+    }
+    else if(req.user.role == "student"){
+        res.redirect("/dashboard/student");
+    }
+    else{
+        res.render("createCourse/createCourse")
+    }
+})
 
 
 // logout
@@ -236,6 +299,8 @@ app.get("/logout",(req,res,next)=>{
         res.redirect('/');
     });
 });
+
+
 
 app.listen(3000,()=>{
     console.log("Listening on port 3000")
