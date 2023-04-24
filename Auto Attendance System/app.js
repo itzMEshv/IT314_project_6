@@ -27,9 +27,8 @@ con.on('open',()=>{
 })
 
 
-const emailName = "Regan Barrows";
-const emailEmail = "regan.barrows@ethereal.email";
-const emailPassword = "p8CcUksSMNfayHAXNA";
+const emailEmail = "aas.auto.attendance.system@gmail.com"
+const emailPassword = "gndwetnpeynkwxeb"
 
 const storage = multer.diskStorage({
     destination:(req,file,callback)=>{
