@@ -59,6 +59,7 @@ app.set("view engine","ejs")
 app.use('/homePage',express.static(__dirname + '/views/homePage'));
 app.use('/login',express.static(__dirname + '/views/login'));
 app.use('/register',express.static(__dirname + '/views/register'));
+app.use('/coursePage',express.static(__dirname + '/views/coursePage'));
 
 
 // home page
