@@ -198,7 +198,7 @@ app.get("/dashboard/student",async(req,res)=>{
 })
 
 // add student for instructor
-app.get("/addStudent/courseName/courseCode/courseId",(req,res)=>{
+app.get("/addStudent/:courseName/:courseCode/:courseId",(req,res)=>{
     if(!req.user){
         res.redirect("/");
     }
@@ -208,8 +208,7 @@ app.get("/addStudent/courseName/courseCode/courseId",(req,res)=>{
     else{
         let courseName = req.params.courseName;
         let courseCode = req.params.courseCode;
-        res.render("addStudent/addStudent",{courseName:courseName,courseCode:courseCode});
-        
+        res.render("addStudent/addStudent",{courseId:req.params.courseId,courseName:courseName,courseCode:courseCode,instructorEmail:user.email});
     }
 })
 
@@ -905,7 +904,80 @@ app.get("/deleteCourse/:courseId",async(req,res)=>{
         }
     }
 })
-
+// download report
+app.get("/downloadReport/:courseId",async(req,res)=>{
+    if(!req.user){
+        res.redirect("/");
+    }
+    else{
+        if(req.user.role == "student"){
+            res.redirect("/dashboard/student");
+        }
+        else{
+            try{
+                const course = await allCourses.findById(new mongoose.Types.ObjectId(req.params.courseId));
+                if(!course){
+                    res.redirect("/");
+                }
+                else{
+                    const allLec = await allLectures.find({
+                        courseId:new mongoose.Types.ObjectId(req.params.courseId)
+                    });
+                    headerName = ["Student Email"];
+                    lectureData = {};
+                    for(let i = 0;i<allLec.length;++i){
+                        headerName.push(allLec[i].lectureName);
+                    }
+                    const allStudent = await StudentEnrollment.find({
+                        courseId:new mongoose.Types.ObjectId(req.params.courseId)
+                    });
+                    for(let i = 0;i<allStudent.length;++i){
+                        lectureData[allStudent[i].studentEmail] = {};
+                        for(let j = 1;j<headerName.length;++j){
+                            lectureData[allStudent[i].studentEmail][headerName[j]] = "0";
+                        }
+                    }
+                    const mark = await markAttendance.find({
+                        courseId:new mongoose.Types.ObjectId(req.params.courseId)
+                    });
+                    for(let i = 0;i<mark.length;++i){
+                        lectureData[mark[i].studentEmail][mark[i].lectureName] = "1";
+                    }
+    
+                    const wb = await new xl.Workbook();
+                    const ws = await wb.addWorksheet(`${course.courseCode}-${course.courseName}`);
+                    colIndex = 1;
+                    headerName.forEach(async(item)=>{
+                        const a = await ws.cell(1,colIndex++).string(item);
+                    });
+                    let rowIndex = 2;
+                    Object.keys(lectureData).forEach(async(key)=>{
+                        colIndex = 1;
+                        const a = await ws.cell(rowIndex,colIndex++).string(key);
+                        Object.keys(lectureData[key]).forEach(async(lec)=>{
+                           const a = await ws.cell(rowIndex,colIndex++).string(lectureData[key][lec]);
+                        })
+                        rowIndex++;
+                    });
+                    const n = `downloadReport/${course.courseCode}-${course.courseName}.xlsx`; 
+                    const a = await wb.write(n);
+                    if(fs.existsSync(n)){
+                        res.download(n,(err)=>{
+                            console.log("Error while downloading the file");
+                        });
+                    }
+                    else{
+                        res.redirect(`/downloadReport/${req.params.courseId}`);
+                    }
+                }
+            }
+            catch(err){
+                console.log("Error");
+                res.redirect("/");
+            }
+        }
+    }
+})
 
 // logout
 app.get("/logout",(req,res,next)=>{
