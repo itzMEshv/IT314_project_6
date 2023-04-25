@@ -1,12 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Course Page</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>
+        <%= courseCode %>
+    </title>
+    <link href="/homePageTemplate/assets/img/hero-img.png" rel="icon">
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+    <link href="/coursePage/css/styles.css" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
-<body>
-    Course Page
+
+<body class="sb-nav-fixed">
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+        <!-- Navbar Brand-->
+        <a class="navbar-brand ps-3" href="/StudentCoursePage/<%= courseId %>">
+            <%= courseCode %>
+        </a>
+        <a href="/dashboard/student" style="color: #fff;">Dashboard</a>
+        <!-- Sidebar Toggle-->
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i
+                class="fas fa-bars"></i></button>
+        <!-- Navbar Search-->
+        <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+            <!-- <div class="input-group">
+                    <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
+                    <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+                </div> -->
+        </form>
+        <!-- Navbar-->
+        <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
+                    aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item">
+                            <%= studentEmail %>
+                        </a></li>
+                    <li>
+                        <hr class="dropdown-divider" />
+                    </li>
+                    <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading"></div>
+                        <a class="nav-link" href="/studentCoursePage/<%= courseId %>">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            CoursePage
+                        </a>
+                        
+                    </div>
+                </div>
+                <div class="sb-sidenav-footer">
+                    <div class="small">Logged in as:</div>
+                    <%= studentEmail %>
+                </div>
+            </nav>
+        </div>
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4">
+                    <h1 class="mt-4">
+                        <%= courseCode %>
+                    </h1>
+                    <ol class="breadcrumb mb-4">
+                        <li class="breadcrumb-item active">
+                            <%= courseName %>
+                        </li>
+                    </ol>
+                    <div class="row">
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-primary text-white mb-4">
+                                <div class="card-body">
+                                    <%= totalLectureCreated %>
+                                </div>
+                                <div class="card-footer d-flex align-items-center justify-content-between">
+                                    <a class="small text-white stretched-link" style="font-weight: 600; text-decoration: none;">Number of Lectures Created</a>
+                                    <!-- <div class="small text-white"><i class="fas fa-angle-right"></i></div> -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-warning text-white mb-4">
+                                <div class="card-body">
+                                    <%= markedAttendance %>
+                                </div>
+                                <div class="card-footer d-flex align-items-center justify-content-between">
+                                    <a class="small text-white stretched-link" style="font-weight: 600; text-decoration: none;">Number of Lectures Attended</a>
+                                    <!-- <div class="small text-white"><i class="fas fa-angle-right"></i></div> -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-success text-white mb-4">
+                                <div class="card-body">
+                                    <%= averageAttendance %>%
+                                </div>
+                                <div class="card-footer d-flex align-items-center justify-content-between">
+                                    <a class="small text-white stretched-link" style="font-weight: 600; text-decoration: none;">Average Attendance</a>
+                                    <!-- <div class="small text-white"><i class="fas fa-angle-right"></i></div> -->
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <i class="fas fa-chart-area me-1"></i>
+                                    Line Chart of attendance of <%= courseCode %> lectures
+                                </div>
+                                <div class="card-body"><canvas id="myAreaChart" width="100%" height="40"></canvas></div>
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <i class="fas fa-chart-bar me-1"></i>
+                                    Pie Chart of attendance of <%= courseCode %>
+                                </div>
+                                <div class="card-body"><canvas id="myPieChart" width="100%" height="40"></canvas></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <footer class="py-4 bg-light mt-auto">
+                <div class="container-fluid px-4">
+                    <div class="d-flex align-items-center justify-content-between small">
+                        <div class="text-muted">Copyright &copy; AutoAttendance 2023</div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+    <script src="/coursePage/js/scripts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+    <!-- <script src="/coursePage/assets/demo/chart-area-demo.js"></script> -->
+    <!-- <script src="/coursePage/assets/demo/chart-bar-demo.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"
+        crossorigin="anonymous"></script>
+    <script src="/coursePage/js/datatables-simple-demo.js"></script>
+    <script>
+        Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+        Chart.defaults.global.defaultFontColor = '#292b2c';
+
+        // Area Chart Example
+        var allLectureNames = '<%- JSON.stringify(actualLectureName) %>';
+        var allLectureCount = '<%- JSON.stringify(actualLectureStatus) %>';
+        // console.log(allLectureNames.length);
+        // console.log(allLectureCount)
+        // console.log(allLectureCount.length);
+        // for(let i = 0;i<allLectureCount.length;++i){
+        //     console.log(allLectureCount[i]);
+        // }
+        actualLectureName = allLectureNames.split(',');
+        actualLectureName[0] = actualLectureName[0].substring(1, actualLectureName[0].length);
+        actualLectureName[actualLectureName.length - 1] = actualLectureName[actualLectureName.length - 1].substring(0, actualLectureName[actualLectureName.length - 1].length - 1);
+        for (let i = 0; i < actualLectureName.length; ++i) {
+            actualLectureName[i] = actualLectureName[i].substring(1, actualLectureName[i].length - 1);
+        }
+
+        actualLectureCount = allLectureCount.split(',');
+        actualLectureCount[0] = actualLectureCount[0].substring(1, actualLectureCount[0].length);
+        console.log(actualLectureCount)
+        actualLectureCount[actualLectureCount.length - 1] = actualLectureCount[actualLectureCount.length - 1].substring(0, actualLectureCount[actualLectureCount.length - 1].length - 1);
+        for (let i = 0; i < actualLectureCount.length; ++i) {
+            actualLectureCount[i] = parseInt(actualLectureCount[i].substring(1, actualLectureCount[i].length - 1));
+        }
+
+        var ctx = document.getElementById("myAreaChart");
+        console.log(actualLectureName)
+        var myLineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: actualLectureName,
+                datasets: [{
+                    label: "Attendance Count",
+                    lineTension: 0.3,
+                    backgroundColor: "rgba(2,117,216,0.2)",
+                    borderColor: "rgba(2,117,216,1)",
+                    pointRadius: 5,
+                    pointBackgroundColor: "rgba(2,117,216,1)",
+                    pointBorderColor: "rgba(255,255,255,0.8)",
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: "rgba(2,117,216,1)",
+                    pointHitRadius: 50,
+                    pointBorderWidth: 2,
+                    data: actualLectureCount,
+                }],
+            },
+            options: {
+                scales: {
+                    xAxes: [{
+                        time: {
+                            unit: 'Lecture'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        ticks: {
+                            maxTicksLimit: 7
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            min: 0,
+                            max: 1,
+                            maxTicksLimit: 1
+                        },
+                        gridLines: {
+                            color: "rgba(0, 0, 0, .125)",
+                        }
+                    }],
+                },
+                legend: {
+                    display: false
+                }
+            }
+        });
+
+        // Set new default font family and font color to mimic Bootstrap's default styling
+        Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+        Chart.defaults.global.defaultFontColor = '#292b2c';
+        totalLectureCreated = parseInt('<%- JSON.stringify(totalLectureCreated) %>');
+        markedAttendance = parseInt('<%- JSON.stringify(markedAttendance) %>')
+        // Pie Chart Example
+        var ctx = document.getElementById("myPieChart");
+        var myPieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ["Attended Lecture","Non Attended Lecture"],
+                datasets: [{
+                    data: [markedAttendance,totalLectureCreated - markedAttendance],
+                    backgroundColor: ['#007bff', '#dc3545', '#ffc107', '#28a745'],
+                }],
+            },
+        });
+
+    </script>
 </body>
 </html>
