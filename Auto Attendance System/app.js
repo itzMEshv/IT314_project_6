@@ -795,6 +795,72 @@ app.get("/coursePage/:courseId",async(req,res)=>{
     }
 })
 
+// student Course Page
+app.get("/studentCoursePage/:courseId",async(req,res)=>{
+    if(!req.user){
+        res.redirect("/");
+    }
+    else{
+        if(req.user.role == "instructor"){
+            res.redirect("/dashboard/instructor");
+        }
+        else{
+            try{
+
+                // console.log(req.params.courseId)
+                const course = await allCourses.findById(new mongoose.Types.ObjectId(req.params.courseId));
+                const allLectureMade = await allLectures.find({
+                    courseId:new mongoose.Types.ObjectId(req.params.courseId)
+                });
+                const markedAttendance = await MarkAttendance.find({
+                    courseId:new mongoose.Types.ObjectId(req.params.courseId),
+                    studentEmail:req.user.email
+                });
+                if(!course){
+                    res.redirect("/dashboard/student");
+                }
+                else{
+                    allLectureId = {};
+                    allLectureName = {};
+                    for(let i = 0;i<allLectureMade.length;++i){
+                        allLectureId[allLectureMade[i].id] = 0;
+                        allLectureName[allLectureMade[i].id] = allLectureMade[i].lectureName;
+                    }
+                    for(let i = 0;i<markedAttendance.length;++i){
+                        allLectureId[markedAttendance[i].lectureId] = 1;
+                    }
+                    actualLectureName = [];
+                    actualLectureStatus = [];
+                    Object.keys(allLectureId).forEach(function(key) {
+                        actualLectureName.push(allLectureName[key]);
+                        actualLectureStatus.push(allLectureId[key]);
+                      });
+                      let avg = (markedAttendance.length/allLectureMade.length)*100;
+                      if(isNaN(avg)){
+                          avg = 0;
+                        }
+                        res.render("studentCoursePage/studentCoursePage",{
+                        courseCode:course.courseCode,
+                        courseName:course.courseName,
+                        studentEmail:req.user.email,
+                        firstName:req.user.firstName,
+                        lastName:req.user.lastName,
+                        totalLectureCreated:allLectureMade.length,
+                        markedAttendance:markedAttendance.length,
+                        averageAttendance:avg,
+                        courseId:course.id,
+                        actualLectureName:actualLectureName,
+                        actualLectureStatus:actualLectureStatus
+                    });
+                }
+            }
+            catch(err){
+                console.log("Error");
+                res.redirect("/");
+            }
+        }
+    }
+});
 
 
 // delete course for instructor
