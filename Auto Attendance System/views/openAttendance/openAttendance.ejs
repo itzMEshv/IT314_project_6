@@ -84,22 +84,22 @@
       </div>
       <div id="layoutSidenav_content">
         <main>
-          <form method="post" class="m-3" enctype="multipart/form-data">
-            <div class="mb-3">
-              <label for="formFile" class="form-label"
-                >Upload Excel file only</label
-              >
-              <input
-                class="form-control w-100"
-                name="file"
-                type="file"
-                id="formFile"
-                required />
-              <input
-                class="mt-3 btn btn-success"
-                type="submit"
-                value="Submit" />
-            </div>
+          <form method="post" class="m-3 p-3">
+            <h2 class="m-auto">Open a new attendance portal</h2>
+            <br />
+            <input
+              class="form-control w-100"
+              type="text"
+              placeholder="Lecture Name"
+              name="lectureName"
+              required /><br />
+            <input
+              class="form-control w-100"
+              type="number"
+              placeholder="Attendance Duration in Minutes"
+              name="minutes"
+              required /><br />
+            <input type="submit" class="btn btn-success" value="Create" />
           </form>
         </main>
         <footer class="py-4 bg-light mt-auto">
