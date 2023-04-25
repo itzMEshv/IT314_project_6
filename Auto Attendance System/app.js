@@ -69,6 +69,7 @@ app.use('/register',express.static(__dirname + '/views/register'));
 app.use('/coursePage',express.static(__dirname + '/views/coursePage'));
 app.use('/dashboard',express.static(__dirname + '/views/dashboard'));
 app.use('/addStudent',express.static(__dirname + '/views/addStudent'));
+app.use('/attendanceCredentials',express.static(__dirname + '/views/attendanceCredentials'));
 
 
 // home page
