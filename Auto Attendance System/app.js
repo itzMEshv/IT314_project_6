@@ -144,15 +144,12 @@ app.get("/",async(req,res)=>{
 app.post("/register/student",async(req,res)=>{
     const user = await User.findOne({email:req.body.email})
     if(user){
-        res.redirect("/register/student")
+        res.redirect("/register2/student")
     }
     else{
         try{
-            const n = await User.find({
-                email:req.body.email
-            });
-            if(n.length){
-                res.redirect("/register/student");
+            if(!isValidPassword(req.body.password)){
+                res.redirect("/register2/student");
             }
             else{
                 const newUser=await User.create(req.body);
@@ -161,7 +158,7 @@ app.post("/register/student",async(req,res)=>{
         }
         catch(err){
             console.log("Error");
-            res.redirect("/register/student");
+            res.redirect("/register2/student");
         }
     }
 });
@@ -182,16 +179,8 @@ app.post("/register2/student",async(req,res)=>{
                 res.redirect("/register2/student");
             }
             else{
-                const n = await User.find({
-                    email:req.body.email
-                });
-                if(n.length){
-                    res.redirect("/register2/student");
-                }
-                else{
-                    const newUser=await User.create(req.body);
-                    res.redirect("/login/student")
-                }
+                const newUser=await User.create(req.body);
+                res.redirect("/login/student")
             }
         }
         catch(err){
@@ -200,18 +189,19 @@ app.post("/register2/student",async(req,res)=>{
         }
     }
 });
-app.get("/register/student",(req,res)=>{
-    res.render("register/studentRegiste2r")
+app.get("/register2/student",(req,res)=>{
+    res.render("register/studentRegister2")
 })
 
 
 // student login
-app.post("/login/student",passport.authenticate("local",{failureRedirect:"/login/student",successRedirect:"/dashboard/student"}),(req,res)=>{
+app.post("/login/student",passport.authenticate("local",{failureRedirect:"/login2/student",successRedirect:"/dashboard/student"}),(req,res)=>{
 
 })
 app.get("/login/student",(req,res)=>{
     res.render("login/studentLogin");
 })
+
 
 
 // student login2
@@ -223,7 +213,7 @@ app.get("/login2/student",(req,res)=>{
 })
 
 // instructor login
-app.post("/login/instructor",passport.authenticate("local",{failureRedirect:"/login/instructor",successRedirect:"/dashboard/instructor"}),(req,res)=>{
+app.post("/login/instructor",passport.authenticate("local",{failureRedirect:"/login2/instructor",successRedirect:"/dashboard/instructor"}),(req,res)=>{
     
 })
 app.get("/login/instructor",(req,res)=>{
@@ -243,15 +233,20 @@ app.get("/login2/instructor",(req,res)=>{
 app.post("/register/instructor",async(req,res)=>{
     const user = await User.findOne({email:req.body.email})
     if (user){
-        res.redirect("/register/instructor");
+        res.redirect("/register2/instructor");
     }
     else{
         try{
-            const newUser=await User.create(req.body);
-            res.redirect("/login/instructor")
+            if(!isValidPassword(req.body.password)){
+                res.redirect("/register2/instructor");
+            }
+            else{
+                const newUser=await User.create(req.body);
+                res.redirect("/login/instructor")
+            }
         }
         catch(err){
-            res.redirect("/register/instructor");
+            res.redirect("/register2/instructor");
             console.log("error");
         }
     }
@@ -259,7 +254,6 @@ app.post("/register/instructor",async(req,res)=>{
 app.get("/register/instructor",(req,res)=>{
     res.render("register/instructorRegister")
 })
-
 
 // register instructor2
 app.post("/register2/instructor",async(req,res)=>{
@@ -278,7 +272,7 @@ app.post("/register2/instructor",async(req,res)=>{
             }
         }
         catch(err){
-            res.redirect("/register/instructor");
+            res.redirect("/register2/instructor");
             console.log("error");
         }
     }
@@ -286,7 +280,6 @@ app.post("/register2/instructor",async(req,res)=>{
 app.get("/register2/instructor",(req,res)=>{
     res.render("register/instructorRegister2")
 })
-
 
 // instructor dashboard
 app.get("/dashboard/instructor",async(req,res)=>{
