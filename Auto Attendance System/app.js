@@ -15,10 +15,17 @@ const XLSX = require("xlsx");
 const xl = require("excel4node");
 const url = `mongodb+srv://202001028:${password}@cluster0.fxivxyw.mongodb.net/?retryWrites=true&w=majority`
 //models
-const User = require("./models/user");
+const ActiveAttendance = require("./models/activeAttendance");
+const AllCourses = require("./models/allCourses");
+const AllLectures = require("./models/allLectures");
 const StudentEnrollment = require("./models/studentEnrollment");
-const AllCourses = require("./models/allCourses")
-
+const User = require("./models/user");
+const MarkAttendance = require("./models/markAttendance");
+const allCourses = require("./models/allCourses");
+const allLectures = require("./models/allLectures");
+const studentEnrollment = require("./models/studentEnrollment");
+const markAttendance = require("./models/markAttendance");
+const user = require("./models/user");
 
 mongoose.connect(url,{useNewUrlParser:true})
 const con = mongoose.connection
@@ -75,10 +82,7 @@ app.get("/",async(req,res)=>{
 
 
 
-// register student
-app.get("/register/student",(req,res)=>{
-    res.render("register/studentRegister")
-})
+// student register
 app.post("/register/student",async(req,res)=>{
     const user = await User.findOne({email:req.body.email})
     if(user){
@@ -103,9 +107,13 @@ app.post("/register/student",async(req,res)=>{
         }
     }
 });
+app.get("/register/student",(req,res)=>{
+    res.render("register/studentRegister")
+})
 
 
-// login student
+
+// student login
 app.post("/login/student",passport.authenticate("local",{failureRedirect:"/login/student",successRedirect:"/dashboard/student"}),(req,res)=>{
 
 })
@@ -123,11 +131,7 @@ app.get("/login/instructor",(req,res)=>{
 })
 
 
-
-// register new instructor
-app.get("/register/instructor",(req,res)=>{
-    res.render("register/instructorRegister");
-})
+// instructor register
 app.post("/register/instructor",async(req,res)=>{
     const user = await User.findOne({email:req.body.email})
     if (user){
@@ -144,6 +148,9 @@ app.post("/register/instructor",async(req,res)=>{
         }
     }
 });
+app.get("/register/instructor",(req,res)=>{
+    res.render("register/instructorRegister")
+})
 
 
 
@@ -707,6 +714,128 @@ app.get("/createCourse",(req,res)=>{
     }
     else{
         res.render("createCourse/createCourse")
+    }
+})
+
+
+// course Page
+app.get("/coursePage/:courseId",async(req,res)=>{
+    if(!req.user){
+        res.redirect("/");
+    }
+    else{
+        if(req.user.role == "student"){
+            res.redirect("/dashboard/student");
+        }
+        else{
+            try{
+
+                const course = await allCourses.findById(new mongoose.Types.ObjectId(req.params.courseId));
+                if(!course){
+                    res.redirect("/");
+                }
+                else{
+                    const number = await studentEnrollment.find({
+                        courseId: new mongoose.Types.ObjectId(req.params.courseId)
+                    });
+                    const lectures = await allLectures.find({
+                        courseId:new mongoose.Types.ObjectId(req.params.courseId)
+                    })
+                    const actualNumber = await markAttendance.find({
+                        courseId: new mongoose.Types.ObjectId(req.params.courseId)
+                    })
+                    // console.log(actualNumber)
+                    let averageAttendance = (actualNumber.length/(lectures.length*number.length))*100;
+                    if(isNaN(averageAttendance)){
+                        averageAttendance = 0;
+                    }
+                    allStudentDetails = [];
+                    for(let i = 0;i<number.length;++i){
+                        allStudentDetails.push({email:number[i].studentEmail,studentName:number[i].studentName});
+                    }
+                    let allLecturePage = [];
+                    let lectureData = {};
+                    let allLectureNames = [];
+                    for(let i = 0;i<lectures.length;++i){
+                        allLecturePage.push({
+                            id:lectures[i].id,
+                            lectureName:lectures[i].lectureName
+                        })
+                        lectureData[lectures[i].lectureName] = 0;
+                    }
+                    for(let i = 0;i<actualNumber.length;i++){
+                        lectureData[actualNumber[i].lectureName] += 1;
+                    }
+                    allLectureCount = [];
+                    Object.keys(lectureData).forEach(function(key) {
+                        allLectureNames.push(key);
+                        allLectureCount.push(lectureData[key]);
+                      })
+        
+                    res.render("coursePage/index",{
+                        courseId:req.params.courseId,
+                        courseCode:course.courseCode,
+                        courseName: course.courseName,
+                        numberOfStudentEnrolled: number.length,
+                        numberOfLectures:lectures.length,
+                        averageAttendance:averageAttendance,
+                        instructorEmail:req.user.email,
+                        studentDetails:allStudentDetails,
+                        allLectures:allLecturePage,
+                        allLectureNames:allLectureNames,
+                        allLectureCount:allLectureCount
+                    });
+                }
+            }
+            catch(err){
+                console.log("Error");
+                res.redirect("/");
+            }
+        }
+    }
+})
+
+
+
+// delete course for instructor
+app.get("/deleteCourse/:courseId",async(req,res)=>{
+    if(!req.user){
+        res.redirect("/");
+    }
+    else if(req.user.role == "student"){
+        res.redirect("/dashboard/student");
+    }
+    else{
+        try{
+
+            const a = await AllCourses.deleteMany({
+                "_id": new mongoose.Types.ObjectId(req.params.courseId)
+            });
+            const c = await allLectures.find({
+                "courseId":new mongoose.Types.ObjectId(req.params.courseId)
+            });
+            await allLectures.deleteMany({
+                "courseId":new mongoose.Types.ObjectId(req.params.courseId)
+            });
+            for(let i = 0;i<c.length;++i){
+                await ActiveAttendance.deleteMany({
+                    "lectureId":c[i].id
+                });
+            }
+            for(let i = 0;i<c.length;++i){
+                await MarkAttendance.deleteMany({
+                    "lectureId":c[i].id
+                });
+            }
+            await StudentEnrollment.deleteMany({
+                "courseId":new mongoose.Types.ObjectId(req.params.courseId)
+            });
+            res.redirect("/dashboard/instructor");
+        }
+        catch(err){
+            console.log("Error in deleting course");
+            res.redirect("/dashboard/instructor");
+        }
     }
 })
 
