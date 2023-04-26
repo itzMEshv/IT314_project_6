@@ -811,6 +811,32 @@ app.post("/addStudent/:courseName/:courseCode/:courseId",upload.single("file"),a
         }
     }
 });
+//Active attendances
+app.get("/markAtt/:studentEmail", async (req, res) => {
+    if (!req.user) {
+        res.redirect("/");
+    } else {
+        var result = []
+        const actAtt = await ActiveAttendance.find()
+        let curr = new Date()
+        for (var i = 0; i < actAtt.length; i++) {
+            let startTime = actAtt[i].startTime;
+            let diff = Math.abs(curr - startTime) / (1000 * 60);
+            if (diff < actAtt[i].minutes) {
+                let lecture = await AllLectures.findById(actAtt[i].lectureId)
+                const enrolled = await StudentEnrollment.find({ courseId: new mongoose.Types.ObjectId(lecture.courseId), studentEmail: req.params.studentEmail })
+                let course = await AllCourses.findById(lecture.courseId)
+                if (enrolled.length != 0) {
+
+                    result.push({ id: actAtt[i].id, courseCode: course.courseCode });
+                }
+            }
+        }
+        const usr = await user.findOne({ email: req.params.studentEmail })
+        res.render("attendanceCredentials/activeAttendance", { actAtt: result, studentEmail: req.params.studentEmail, firstName: usr.firstName, lastName: usr.lastName })
+
+    }
+})
 
 // create course for instructor
 app.post("/createCourse",async(req,res)=>{
