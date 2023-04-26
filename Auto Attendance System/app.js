@@ -846,6 +846,62 @@ app.get("/createCourse",(req,res)=>{
         res.render("createCourse/createCourse")
     }
 })
+// mark attendance for student
+app.get("/markAttendance/:attendanceId/:studentEmail",async(req,res)=>{
+    const attendance = await ActiveAttendance.findById(new mongoose.Types.ObjectId(req.params.attendanceId));
+    if(!attendance){
+        res.render("attendanceCredentials/noAttendance");
+    }
+    else{
+        try{
+
+            let minu = new Date(attendance.startTime);
+            const lecture = await AllLectures.findById(attendance.lectureId);
+            if(!lecture){
+                res.render("attendanceCredentials/invalidLecture");
+            }
+            else{
+                const student = await StudentEnrollment.find({courseId:lecture.courseId,studentEmail:req.params.studentEmail});
+                if(!student.length){
+                    res.render("attendanceCredentials/invalidStudent",{studentEmail:req.params.studentEmail});
+                }
+                else{
+                    const mark1 = await MarkAttendance.find({
+                        lectureId:lecture.id,
+                        lectureName:lecture.lectureName,
+                        studentEmail:req.params.studentEmail,
+                        courseId:lecture.courseId
+                    });
+                    // console.log(mark1);
+                    if(!mark1.length){
+                        let curr = new Date();
+                        let diff = Math.abs(minu - curr)/(1000*60);
+                        if(diff <= attendance.minutes){
+                            const mark = await MarkAttendance.create({
+                                lectureId:lecture.id,
+                                lectureName:lecture.lectureName,
+                                studentEmail:req.params.studentEmail,
+                                courseId:lecture.courseId
+                            });
+                            const course = await AllCourses.findById(lecture.courseId);
+                            res.render("attendanceCredentials/successAttendance",{courseCode:course.courseCode,studentEmail:req.params.studentEmail});
+                        }
+                        else{
+                            res.render("attendanceCredentials/lateAttendance");
+                        }
+                    }
+                    else{
+                        res.render("attendanceCredentials/alreadyMarked");
+                    }
+                }
+            }
+        }
+        catch(err){
+            console.log("Error");
+            res.redirect("/");
+        }
+    }
+});
 
 
 // course Page
