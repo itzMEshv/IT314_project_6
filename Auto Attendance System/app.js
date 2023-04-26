@@ -26,7 +26,7 @@ const allLectures = require("./models/allLectures");
 const studentEnrollment = require("./models/studentEnrollment");
 const markAttendance = require("./models/markAttendance");
 const user = require("./models/user");
-
+const fs = require("fs");
 mongoose.connect(url,{useNewUrlParser:true})
 const con = mongoose.connection
 con.on('open',()=>{
@@ -338,7 +338,7 @@ app.get("/addStudent/:courseName/:courseCode/:courseId",(req,res)=>{
     else{
         let courseName = req.params.courseName;
         let courseCode = req.params.courseCode;
-        res.render("addStudent/addStudent",{courseId:req.params.courseId,courseName:courseName,courseCode:courseCode,instructorEmail:user.email});
+        res.render("addStudent/addStudent",{courseId:req.params.courseId,courseName:courseName,courseCode:courseCode,instructorEmail:req.user.email});
     }
 })
 
@@ -642,9 +642,9 @@ app.post("/addStudent/:courseName/:courseCode/:courseId",upload.single("file"),a
                                                                                                 <a href=""
                                                                                                     style="text-decoration: none;"
                                                                                                     target="_self"><img align="center"
-                                                                                                        alt="graduaton celebration"
+                                                                                                        alt="AutoAttendance System"
                                                                                                         class="icon" height="128"
-                                                                                                        src="https://png.pngtree.com/png-clipart/20220617/ourmid/pngtree-graduation-cap-png-image_5108468.png"
+                                                                                                        src="https://i.ibb.co/tbMk7Fd/logo.png"
                                                                                                         style="display: block; height: auto; margin: 0 auto; border: 0;"
                                                                                                         width="109" /></a></td>
                                                                                         </tr>
@@ -1473,9 +1473,9 @@ app.post("/openAttendance/:courseId",async(req,res)=>{
                                                                                                 <a href=""
                                                                                                     style="text-decoration: none;"
                                                                                                     target="_self"><img align="center"
-                                                                                                        alt="graduation celebration"
+                                                                                                        alt="AutoAttendance System"
                                                                                                         class="icon" height="128"
-                                                                                                        src="https://png.pngtree.com/png-clipart/20220617/ourmid/pngtree-graduation-cap-png-image_5108468.png"
+                                                                                                        src="https://i.ibb.co/tbMk7Fd/logo.png"
                                                                                                         style="display: block; height: auto; margin: 0 auto; border: 0;"
                                                                                                         width="109" /></a></td>
                                                                                         </tr>
@@ -1528,7 +1528,7 @@ app.post("/openAttendance/:courseId",async(req,res)=>{
                                                                                     style="padding-left:10px;padding-right:10px;">
                                                                                     <div
                                                                                         style="color:#201f42;direction:ltr;font-family:Inter, sans-serif;font-size:16px;font-weight:400;letter-spacing:0px;line-height:180%;text-align:center;mso-line-height-alt:28.8px;">
-                                                                                        <p style="margin: 0;">Attendance started for coruse ${listOfStudents[i].courseCode}, the link will only be valid for ${req.body.minutes} minutes</p>
+                                                                                        <p style="margin: 0;">Attendance started for course ${listOfStudents[i].courseCode}, the link will only be valid for ${req.body.minutes} minutes</p>
                                                                                     </div>
                                                                                 </td>
                                                                             </tr>
@@ -1740,7 +1740,7 @@ app.get("/downloadReport/:courseId",async(req,res)=>{
                     const a = await wb.write(n);
                     if(fs.existsSync(n)){
                         res.download(n,(err)=>{
-                            console.log("Error while downloading the file");
+                            console.log("");
                         });
                     }
                     else{
@@ -1750,7 +1750,7 @@ app.get("/downloadReport/:courseId",async(req,res)=>{
             }
             catch(err){
                 console.log("Error");
-                res.redirect("/");
+                res.redirect(`/coursePage/${req.params.courseId}`);
             }
         }
     }
