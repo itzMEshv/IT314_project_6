@@ -70,7 +70,11 @@ app.use('/coursePage',express.static(__dirname + '/views/coursePage'));
 app.use('/dashboard',express.static(__dirname + '/views/dashboard'));
 app.use('/addStudent',express.static(__dirname + '/views/addStudent'));
 app.use('/attendanceCredentials',express.static(__dirname + '/views/attendanceCredentials'));
-
+app.use('/createCourse',express.static(__dirname + '/views/createCourse'));
+app.use('/lecturePage',express.static(__dirname + '/views/lecturePage'));
+app.use('/openAttendance',express.static(__dirname + '/views/openAttendance'));
+app.use('/pageNotFound',express.static(__dirname + '/views/pageNotFound'));
+app.use('/studentCoursePage',express.static(__dirname + '/views/studentCoursePage'));
 
 
 // utility function for password checking
