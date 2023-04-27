@@ -1738,7 +1738,7 @@ app.get("/downloadReport/:courseId",async(req,res)=>{
                         rowIndex++;
                     });
                     var today  = new Date();
-                    const n = `downloadReport/${course.courseCode}-${course.courseName}-${today.getHours().toString()}-${today.getMinutes().toString()}.xlsx`; 
+                    const n = `downloadReport/${course.courseCode}-${course.courseName}-${today.getHours().toString()}-${today.getMinutes().toString()}-${today.getFullYear().toString()}-${today.getMonth().toString()}-${today.getDay().toString()}.xlsx`; 
                     wb.write(n);
                     if(fs.existsSync(n)){
                         res.download(n,(err)=>{
