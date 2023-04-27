@@ -1692,6 +1692,7 @@ app.get("/downloadReport/:courseId",async(req,res)=>{
         }
         else{
             try{
+
                 const course = await allCourses.findById(new mongoose.Types.ObjectId(req.params.courseId));
                 if(!course){
                     res.redirect("/");
@@ -1725,22 +1726,23 @@ app.get("/downloadReport/:courseId",async(req,res)=>{
                     const ws = await wb.addWorksheet(`${course.courseCode}-${course.courseName}`);
                     colIndex = 1;
                     headerName.forEach(async(item)=>{
-                        const a = await ws.cell(1,colIndex++).string(item);
+                        ws.cell(1,colIndex++).string(item);
                     });
                     let rowIndex = 2;
                     Object.keys(lectureData).forEach(async(key)=>{
                         colIndex = 1;
-                        const a = await ws.cell(rowIndex,colIndex++).string(key);
+                        ws.cell(rowIndex,colIndex++).string(key);
                         Object.keys(lectureData[key]).forEach(async(lec)=>{
-                           const a = await ws.cell(rowIndex,colIndex++).string(lectureData[key][lec]);
+                           ws.cell(rowIndex,colIndex++).string(lectureData[key][lec]);
                         })
                         rowIndex++;
                     });
-                    const n = `downloadReport/${course.courseCode}-${course.courseName}.xlsx`; 
-                    const a = await wb.write(n);
+                    var today  = new Date();
+                    const n = `downloadReport/${course.courseCode}-${course.courseName}-${today.getHours().toString()}-${today.getMinutes().toString()}.xlsx`; 
+                    wb.write(n);
                     if(fs.existsSync(n)){
                         res.download(n,(err)=>{
-                            console.log("");
+                            
                         });
                     }
                     else{
@@ -1749,8 +1751,8 @@ app.get("/downloadReport/:courseId",async(req,res)=>{
                 }
             }
             catch(err){
-                console.log("Error");
-                res.redirect(`/coursePage/${req.params.courseId}`);
+                console.log("");
+                res.redirect(`/`)
             }
         }
     }
