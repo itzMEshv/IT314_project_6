@@ -859,7 +859,7 @@ app.get("/markAtt/:studentEmail", async (req, res) => {
 
 // create course for instructor
 app.post("/createCourse",async(req,res)=>{
-    if (!res.body.courseCode.length || !res.body.courseName) {
+    if (!req.body.courseCode.length || !req.body.courseName) {
         res.render("/");
     }
     else{
