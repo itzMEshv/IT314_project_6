@@ -7,6 +7,7 @@
 
 - [Files in this repository](#files-in-this-repository)
 - [Overview](#overview)
+- [Website link](#website-link)
 - [Features](#features)
 - [Technologies used](#technologies-used)
   - [Front End](#front-end)
@@ -17,7 +18,6 @@
 
 This is the auto attendance project.
 The list of lab submissions available are as follows:
-- IT314_Lab1.pdf
 - IT314_Lab2.pdf
 - IT314_Lab3.pdf
 - IT314_Lab4.pdf
@@ -28,6 +28,11 @@ The list of lab submissions available are as follows:
 ## Overview
 
 This is an application that provides the students an option to automatically mark attendance in the lecture and lab sessions. The instructor opens the sessions for a specific duration and students have to automatically mark the same. AutoAttendance reduces the time of marking attendance and encourages proxies.
+
+## Website Link
+
+**Website link** - https://auto-attendance-system.onrender.com    
+**Demo video link** - https://youtu.be/lEELUE7JhQc  
 
 ### To run the repository in your local system
 
@@ -72,7 +77,6 @@ This is an application that provides the students an option to automatically mar
 - MongoDB
 
 ## Contributors
-
 
 <ul>
   <li><a href="https://github.com/itzMEshv">Meshv</a> - Group Leader</li>
